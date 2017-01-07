@@ -1,0 +1,22 @@
+{
+  "name": "slim-skeleton",
+  "version": "1.0.0",
+  "description": "Comecando com o Slim",
+  "main": "Gulpfile.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Slim",
+    "3",
+    "Gulp"
+  ],
+  "author": "Joao Antonio Gardin Vieira <gardin1992@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "gulp": "^3.9.1"
+  }
+}
