@@ -2,12 +2,12 @@
 
 namespace Src\Helpers;
 
-class Helper {
+class Debug {
 
 	/**
 	 * Printa o array/objeto passado como parametro
 	**/
-	public function debug($value) {
+	public function dump($value) {
 
 		echo '<pre>';
 		print_r($value);

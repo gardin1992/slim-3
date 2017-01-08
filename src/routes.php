@@ -1,40 +1,98 @@
 <?php
 
-use Src\Helpers;
-use Src\Models;
+use Src\Helpers\Debug;
+use Src\Helpers\UploadFile;
+use Src\Https\Models\Files;
+use Src\Https\Models\Dao\FilesDao;
 
 // Routes
+// / - home
 $app->get('/', function ($request, $response, $args) {
 
-    // Sample log message
-    $this->logger->info("Slim-Skeleton '/' route");
-    // Render index view
     return $this->renderer->render($response, 'index.phtml', $args);
 
 });
 
-$app->get('/require', function ($request, $response, $args) {
+// api
 
-    // Render index view
-    return $this->renderer->render($response, 'require.phtml', $args);
+$app->get('/api/files[/{id}]', function ($req, $res, $args) {
+
+    $dao = new FilesDao($this->db);
+
+    if (isset($args['id'])) {
+
+        $data = $dao->getById($args['id']);
+
+        $json = [
+            'success' => true,
+            'data' => [
+                'name' => $data->name,
+                'type' => $data->type,
+                'file' => base64_encode($data->file)
+            ]
+        ];
+
+        return $res->withJson($json);
+
+    } else {
+
+        $data = $dao->getAll();
+        $items = [];
+
+        for ($x = 0; $x <count($data); $x++) {
+
+            $item = $data[$x];
+            $item['file'] = base64_encode($item['file']);
+            array_push($items, $item);
+
+        }
+
+        $json = [
+            'success' => true,
+            'data' => $items
+        ];
+
+        return $res->withJson($json);
+
+    }
+
+    //echo '<video controls autoplay><source type="video/mp4" src="data:video/mp4;base64,' . $firstFile . '"></video>';
+    //echo '<img src="data:image/jpeg;base64,'. base64_encode( $file['file'] ).'"/>';
+
+    //var_dump($firstFile);
+    
 
 });
 
+// Crud Upload
+// /upload - index - get all
 $app->get('/upload', function ($req, $res) {
 
-	$sth = $this->db->query('select * from files');
-	$sth->execute();
+    $dao = new FilesDao($this->db);
+    $data = $dao->getAll();
 
-	$data = $sth->fetchAll();
-
-	// $this->response
-	return $res->withJson([
+    return $res->withJson([
 		'success' => true,
 		'data' => $data
 	]);
 
 });
 
+// get by id
+$app->get('/upload/[{id}]', function ($req, $res, $args) {
+    
+    $dao = new FilesDao($this->db);
+    $data = $dao->getById($args['id']);
+
+    // $this->response
+    return $res->withJson([
+        'success' => true,
+        'data' => $data
+    ]);
+
+});
+
+// insert
 $app->post('/upload', function ($req, $res) {
 
     $data = [];
@@ -45,19 +103,21 @@ $app->post('/upload', function ($req, $res) {
             'err' => 'Nenhum arquivo enviado'
         ]);
 
-    $files = Helpers\UploadFile::getFiles($_FILES['multiple']);
+    $files = UploadFile::getFiles($_FILES['multiple']);
     // /array_push($files, Helpers\UploadFile::getFiles($_FILES['simple']));
 
-    $model = new Models\File($this->db);
+    $dao = new FilesDao($this->db);
 
     foreach ($files as $key => $value) {
+
         # code...
         $props = [
             'name' => $value->getName(),
-            'file' => $value->getFile()
+            'file' => $value->getFile(),
+            'type' => $value->getType(),
         ];
 
-        $file = $model->create($props);
+        $file = $dao->save($props);
         array_push($data, $file);
 
     }
