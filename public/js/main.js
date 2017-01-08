@@ -1,42 +1,161 @@
-define(["uploadFile"], function ( uploadFile ) {
+define(['files'], function (Files) {
 
-    function sendFile(e) {
+    var _listFiles,
+        _formFiles,
+        _contentPlayer,
+        _player,
+        _source;
 
-        e.stopPropagation(); // Stop stuff happening
-        e.preventDefault(); // Totally stop stuff happening
+    function _initialize() {
 
-        uploadFile.sendFiles({
-            url     : '/upload',
-            files   : _files,
-            form    : this,
-            callback : function () {
+        _listFiles      = $('#listFiles');
+        _formFiles      = $('#formFiles');
+        _contentPlayer  = $('#Player');
+        _player         = _contentPlayer.find('video').get('0');
+        _source         = $('<source>');
 
-                console.log('callback');
+        _source.appendTo(_player);
 
-            }
+        _formFiles.on('submit', function (e) {
+
+            e.preventDefault();
+
+            _formFiles.ajaxSubmit({
+                dataType: 'json',
+                success: function (data, textStatus, jqXHR) {
+
+                    console.log('data', data);
+                    console.log('textStatus', textStatus);
+                    console.log('jqXHR', jqXHR);
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+
+                    console.log('textStatus', textStatus);
+                    console.log('errorThrown', errorThrown)
+
+                }
+ 
+            });
+
         });
+
+        _contentPlayer.css({
+                width: '100%',
+                height: '500px'
+            });
+
+        $(_player)
+            .removeAttr('controls')
+            .css({
+                width: '100%',
+                height: '100%',
+                background: '#000'
+            });
+
+        Files.getAll(_getFiles);
 
     }
 
-    $(function () {
+    function _getFiles(files) {
 
-        var _files;
+        function b64toBlob(b64Data, contentType, sliceSize) {
+          contentType = contentType || '';
+          sliceSize = sliceSize || 512;
 
-        var _formUpload = $('#formUpload')
-            .on('submit', function (e) {
+          var byteCharacters = atob(b64Data);
+          var byteArrays = [];
 
-                e.preventDefault();
-                $(this).ajaxSubmit();
+          for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+            var slice = byteCharacters.slice(offset, offset + sliceSize);
 
-            });
+            var byteNumbers = new Array(slice.length);
+            for (var i = 0; i < slice.length; i++) {
+              byteNumbers[i] = slice.charCodeAt(i);
+            }
 
-        var _upMultiple = _formUpload.find('input[type="file"]')
-            .on('change', function (e) {
+            var byteArray = new Uint8Array(byteNumbers);
 
-                _files = this.files[0];
+            byteArrays.push(byteArray);
+          }
 
-            });
+          var blob = new Blob(byteArrays, {type: contentType});
+          return blob;
+        }
 
-    });
+        var blob = b64toBlob(files.file, files.type);
+        var blobUrl = URL.createObjectURL(blob);
+
+        console.log(blob, blobUrl);
+
+        _source.attr('src', blobUrl);
+            _player.load();
+
+        return;
+
+        _contentPlayer.empty();
+
+        if (files.type == 'image/jpeg')
+            $('<img>')
+            .attr('src', blobUrl)
+            .appendTo(_contentPlayer);
+
+        else {
+
+            var video =  $('<video>')
+                .appendTo(_contentPlayer);
+
+            $('<source>')
+                .attr('type', files.type)
+                .attr('src', blobUrl)
+                //.appendTo(video);            
+
+            _player.src =  blobUrl; //= video.get(0);
+            _player.load();
+
+        } 
+
+    }
+
+    function _createBlobFile(file) {
+
+        var blob = b64toBlob([file.file], file.type);
+        var blobUrl = URL.createObjectURL(blob);
+
+        return {
+            blob    : blob,
+            url     : blobUrl
+        };
+
+    }
+
+    function b64toBlob(b64Data, contentType, sliceSize) {
+        contentType = contentType || '';
+        sliceSize = sliceSize || 512;
+
+        var byteCharacters = atob(b64Data);
+        var byteArrays = [];
+
+        for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+            
+            var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+            var byteNumbers = new Array(slice.length);
+            for (var i = 0; i < slice.length; i++) {
+              byteNumbers[i] = slice.charCodeAt(i);
+            }
+
+            var byteArray = new Uint8Array(byteNumbers);
+
+            byteArrays.push(byteArray);
+        
+        }
+
+        var blob = new Blob(byteArrays, {type: contentType});
+
+        return blob;
+    }
+
+    _initialize();
 
 });

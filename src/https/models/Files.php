@@ -1,8 +1,8 @@
 <?php
 
-namespace Src\Helpers;
+namespace Src\Https\Models;
 
-class File {
+class Files {
 
 	private $_tmp_name;
 	private $_size;
@@ -13,8 +13,6 @@ class File {
 	public function __construct($file) {
 
 		if (isset($file['name']) && isset($file['name'][0]) ) {
-
-			Helper::debug($file['size'][0]);
 
 			$this->_tmp_name = $file['tmp_name'][0];
 			$this->_size 	= $file['size'][0];
@@ -41,11 +39,16 @@ class File {
 	public function getFile() {
 
 		if ( $this->getTmpName() != "none" ) {
+
+			/*
 			
 			$fp = fopen($this->getTmpName(), "rb");
 		    $file = fread($fp, $this->getSize());
 		    $file = addslashes($file);
 		    fclose($fp);
+		    */
+
+		    return file_get_contents($this->getTmpName());
 
 		}
 
