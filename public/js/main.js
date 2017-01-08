@@ -3,7 +3,8 @@ define(['files'], function (Files) {
     var _listFiles,
         _formFiles,
         _contentPlayer,
-        _player;
+        _player,
+        _source;
 
     function _initialize() {
 
@@ -11,6 +12,9 @@ define(['files'], function (Files) {
         _formFiles      = $('#formFiles');
         _contentPlayer  = $('#Player');
         _player         = _contentPlayer.find('video').get('0');
+        _source         = $('<source>');
+
+        _source.appendTo(_player);
 
         _formFiles.on('submit', function (e) {
 
@@ -55,45 +59,61 @@ define(['files'], function (Files) {
 
     function _getFiles(files) {
 
-        return;
+        function b64toBlob(b64Data, contentType, sliceSize) {
+          contentType = contentType || '';
+          sliceSize = sliceSize || 512;
 
-        console.log(files);
+          var byteCharacters = atob(b64Data);
+          var byteArrays = [];
+
+          for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+            var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+            var byteNumbers = new Array(slice.length);
+            for (var i = 0; i < slice.length; i++) {
+              byteNumbers[i] = slice.charCodeAt(i);
+            }
+
+            var byteArray = new Uint8Array(byteNumbers);
+
+            byteArrays.push(byteArray);
+          }
+
+          var blob = new Blob(byteArrays, {type: contentType});
+          return blob;
+        }
+
+        var blob = b64toBlob(files.file, files.type);
+        var blobUrl = URL.createObjectURL(blob);
+
+        console.log(blob, blobUrl);
+
+        _source.attr('src', blobUrl);
+            _player.load();
+
+        return;
 
         _contentPlayer.empty();
 
-        $('<img>')
-            .attr('src', 'data:image/jpeg;base64,' + files)
+        if (files.type == 'image/jpeg')
+            $('<img>')
+            .attr('src', blobUrl)
             .appendTo(_contentPlayer);
 
-        return ;
+        else {
 
-        if (!files.length) {
-            return false;
-        }
+            var video =  $('<video>')
+                .appendTo(_contentPlayer);
 
-        var source = $('<source>')
-            .attr('src', '')
-            .appendTo(_player);
+            $('<source>')
+                .attr('type', files.type)
+                .attr('src', blobUrl)
+                //.appendTo(video);            
 
-        var items = [];
+            _player.src =  blobUrl; //= video.get(0);
+            _player.load();
 
-        for(var x = 0; x < files.length; x++) {
-
-            (function (file) {
-                var item = _createBlobFile(file);
-
-                console.log(item);
-
-                if (x == 0) {
-                    source.attr('src', item.url);
-                }
-                items.push[item];
-
-            })(files[x]);
-
-        }
-
-        _player.load();
+        } 
 
     }
 

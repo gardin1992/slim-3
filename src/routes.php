@@ -23,14 +23,14 @@ $app->get('/api/files[/{id}]', function ($req, $res, $args) {
 
         $data = $dao->getById($args['id']);
 
-        $json = json_encode([
+        $json = [
             'success' => true,
             'data' => [
                 'name' => $data->name,
                 'type' => $data->type,
                 'file' => base64_encode($data->file)
             ]
-        ]);
+        ];
 
         return $res->withJson($json);
 
