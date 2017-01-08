@@ -1,4 +1,4 @@
-define(['files'], function (Files) {
+define(['helpers', 'files', 'player'], function (Helper, Files, Player) {
 
     var _listFiles,
         _formFiles,
@@ -6,44 +6,22 @@ define(['files'], function (Files) {
         _player,
         _source;
 
-    function _initialize() {
+    function _createPlayer() {
 
-        _listFiles      = $('#listFiles');
-        _formFiles      = $('#formFiles');
-        _contentPlayer  = $('#Player');
-        _player         = _contentPlayer.find('video').get('0');
-        _source         = $('<source>');
-
-        _source.appendTo(_player);
-
-        _formFiles.on('submit', function (e) {
-
-            e.preventDefault();
-
-            _formFiles.ajaxSubmit({
-                dataType: 'json',
-                success: function (data, textStatus, jqXHR) {
-
-                    console.log('data', data);
-                    console.log('textStatus', textStatus);
-                    console.log('jqXHR', jqXHR);
-
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-
-                    console.log('textStatus', textStatus);
-                    console.log('errorThrown', errorThrown)
-
-                }
- 
-            });
-
+        _contentPlayer  = Player({
+            target: $('#Player'),
+            type: 'video',
+            config: {
+                controls: true
+            }
         });
 
-        _contentPlayer.css({
-                width: '100%',
-                height: '500px'
-            });
+        _player = _contentPlayer.getPlayer();
+
+        _contentPlayer.getTarget().css({
+            width: '100%',
+            height: '500px'
+        });
 
         $(_player)
             .removeAttr('controls')
@@ -53,107 +31,102 @@ define(['files'], function (Files) {
                 background: '#000'
             });
 
+    }
+
+    function _createFormFiles() {
+
+        var options = {
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+
+                console.log('data', data);
+                console.log('textStatus', textStatus);
+                console.log('jqXHR', jqXHR);
+
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+
+                console.log('textStatus', textStatus);
+                console.log('errorThrown', errorThrown)
+
+            }
+        };
+
+        _formFiles = $('#formFiles')
+            .on('submit', function (e) {
+
+                e.preventDefault();
+
+                $(this).ajaxSubmit(options);
+
+            });
+
+    }
+
+    function _createList() {
+
+        _listFiles      = $('#listFiles');
         Files.getAll(_getFiles);
+
+    }
+
+    function _initialize() {
+
+        _createPlayer();
+        _createFormFiles();
+        _createList();
 
     }
 
     function _getFiles(files) {
 
-        function b64toBlob(b64Data, contentType, sliceSize) {
-          contentType = contentType || '';
-          sliceSize = sliceSize || 512;
+        if (files.length) {
 
-          var byteCharacters = atob(b64Data);
-          var byteArrays = [];
+            for (x = 0; x < files.length; x++) {
 
-          for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-            var slice = byteCharacters.slice(offset, offset + sliceSize);
+                (function (file) {
 
-            var byteNumbers = new Array(slice.length);
-            for (var i = 0; i < slice.length; i++) {
-              byteNumbers[i] = slice.charCodeAt(i);
+                    var li = $('<li>')
+                    .addClass('')
+                    .on('click', function (e) {
+
+                        e.preventDefault();
+
+                        _changeFile(this.file);
+
+                    })
+                    .appendTo(_listFiles);
+
+                    li.get(0).file = file;
+
+                    $('<a>')
+                        .html(file.name + ' <small>Type: ' + file.type+ '</small>')
+                        .appendTo(li);
+
+                })(files[x]);
+
             }
 
-            var byteArray = new Uint8Array(byteNumbers);
+            _changeFile(files[0]);
 
-            byteArrays.push(byteArray);
-          }
+            return ;
 
-          var blob = new Blob(byteArrays, {type: contentType});
-          return blob;
         }
 
-        var blob = b64toBlob(files.file, files.type);
-        var blobUrl = URL.createObjectURL(blob);
-
-        console.log(blob, blobUrl);
-
-        _source.attr('src', blobUrl);
-            _player.load();
-
-        return;
-
-        _contentPlayer.empty();
-
-        if (files.type == 'image/jpeg')
-            $('<img>')
-            .attr('src', blobUrl)
-            .appendTo(_contentPlayer);
-
-        else {
-
-            var video =  $('<video>')
-                .appendTo(_contentPlayer);
-
-            $('<source>')
-                .attr('type', files.type)
-                .attr('src', blobUrl)
-                //.appendTo(video);            
-
-            _player.src =  blobUrl; //= video.get(0);
-            _player.load();
-
-        } 
+        _changeFile(files);
 
     }
 
-    function _createBlobFile(file) {
+    function _changeFile(item) {
 
-        var blob = b64toBlob([file.file], file.type);
+        var blob = Helper.b64toBlob(item.file, item.type);
         var blobUrl = URL.createObjectURL(blob);
 
-        return {
-            blob    : blob,
-            url     : blobUrl
-        };
+        _contentPlayer.setFile({
+            blob: blob,
+            blobUrl: blobUrl
+        });
 
-    }
-
-    function b64toBlob(b64Data, contentType, sliceSize) {
-        contentType = contentType || '';
-        sliceSize = sliceSize || 512;
-
-        var byteCharacters = atob(b64Data);
-        var byteArrays = [];
-
-        for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-            
-            var slice = byteCharacters.slice(offset, offset + sliceSize);
-
-            var byteNumbers = new Array(slice.length);
-            for (var i = 0; i < slice.length; i++) {
-              byteNumbers[i] = slice.charCodeAt(i);
-            }
-
-            var byteArray = new Uint8Array(byteNumbers);
-
-            byteArrays.push(byteArray);
-        
-        }
-
-        var blob = new Blob(byteArrays, {type: contentType});
-
-        return blob;
     }
 
     _initialize();

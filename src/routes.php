@@ -37,8 +37,22 @@ $app->get('/api/files[/{id}]', function ($req, $res, $args) {
     } else {
 
         $data = $dao->getAll();
+        $items = [];
 
-        for($x = 0; $x < count($data); $x++) {}
+        for ($x = 0; $x <count($data); $x++) {
+
+            $item = $data[$x];
+            $item['file'] = base64_encode($item['file']);
+            array_push($items, $item);
+
+        }
+
+        $json = [
+            'success' => true,
+            'data' => $items
+        ];
+
+        return $res->withJson($json);
 
     }
 

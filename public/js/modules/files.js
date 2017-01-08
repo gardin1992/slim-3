@@ -6,7 +6,7 @@ define(function() {
 
 			$.ajax({
 
-				url: '/api/files/29',
+				url: '/api/files',
 				type: 'GET',
 				success: function (result, status, xhr) {
 
