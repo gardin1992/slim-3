@@ -1,40 +1,47 @@
 <?php
 
-use Src\Helpers;
-use Src\Models;
+use Src\Helpers\Debug;
+use Src\Helpers\UploadFile;
+use Src\Https\Models\Files;
+use Src\Https\Models\Dao\FilesDao;
 
 // Routes
+// / - home
 $app->get('/', function ($request, $response, $args) {
 
-    // Sample log message
-    $this->logger->info("Slim-Skeleton '/' route");
-    // Render index view
     return $this->renderer->render($response, 'index.phtml', $args);
 
 });
 
-$app->get('/require', function ($request, $response, $args) {
-
-    // Render index view
-    return $this->renderer->render($response, 'require.phtml', $args);
-
-});
-
+// Crud Upload
+// /upload - index - get all
 $app->get('/upload', function ($req, $res) {
 
-	$sth = $this->db->query('select * from files');
-	$sth->execute();
+    $dao = new FilesDao($this->db);
+    $data = $dao->getAll();
 
-	$data = $sth->fetchAll();
-
-	// $this->response
-	return $res->withJson([
+    return $res->withJson([
 		'success' => true,
 		'data' => $data
 	]);
 
 });
 
+// get by id
+$app->get('/upload/[{id}]', function ($req, $res, $args) {
+    
+    $dao = new FilesDao($this->db);
+    $data = $dao->getById($args['id']);
+
+    // $this->response
+    return $res->withJson([
+        'success' => true,
+        'data' => $data
+    ]);
+
+});
+
+// insert
 $app->post('/upload', function ($req, $res) {
 
     $data = [];
@@ -45,10 +52,10 @@ $app->post('/upload', function ($req, $res) {
             'err' => 'Nenhum arquivo enviado'
         ]);
 
-    $files = Helpers\UploadFile::getFiles($_FILES['multiple']);
+    $files = UploadFile::getFiles($_FILES['multiple']);
     // /array_push($files, Helpers\UploadFile::getFiles($_FILES['simple']));
 
-    $model = new Models\File($this->db);
+    $dao = new FilesDao($this->db);
 
     foreach ($files as $key => $value) {
         # code...
@@ -57,7 +64,7 @@ $app->post('/upload', function ($req, $res) {
             'file' => $value->getFile()
         ];
 
-        $file = $model->create($props);
+        $file = $dao->save($props);
         array_push($data, $file);
 
     }

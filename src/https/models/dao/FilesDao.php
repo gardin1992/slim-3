@@ -1,8 +1,10 @@
 <?php
 
-namespace Src\Models;
+namespace Src\Https\Models\Dao;
 
-class File extends AbstractDao {
+use Src\Helpers\Singleton;
+
+class FilesDao  extends AbstractDao {
 
 	public function __construct($db) {
 
@@ -11,6 +13,5 @@ class File extends AbstractDao {
 		$this->_fields = ['name', 'file'];
 
 	}
-
 
 }

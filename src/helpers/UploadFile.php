@@ -2,6 +2,10 @@
 
 namespace Src\Helpers;
 
+
+use Src\Helpers\Debug;
+use Src\Https\Models\Files;
+
 class UploadFile {
 
 	/**
@@ -16,7 +20,7 @@ class UploadFile {
 
 		if ($numFile) {
 
-			array_push($data, new File($files));
+			array_push($data, new Files($files));
 
 		} else {
 
@@ -29,7 +33,7 @@ class UploadFile {
 
 				}
 
-				array_push($data, new File($file));
+				array_push($data, new Files($file));
 
 			}
 			

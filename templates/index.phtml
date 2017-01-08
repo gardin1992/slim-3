@@ -10,9 +10,16 @@
     <body>
 
         <main class="container">
+
+            <div class="col-sm-8 col-sm-offset-2" style="height: 300px; overflow-y: auto;">
+                <h3>Lista de Arquivos</h3>
+                <ul id="listFiles">
+                </ul>
+            </div>
             
             <div class="col-sm-8 col-sm-offset-2">
-                <h1>Upload a file</h1>
+
+                <h3>Upload a file</h3>
 
                 <form id="formUpload" action="/upload" method="post" enctype="multipart/form-data">
                     

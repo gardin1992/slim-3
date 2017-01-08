@@ -1,22 +1,4 @@
-define(["uploadFile"], function ( uploadFile ) {
-
-    function sendFile(e) {
-
-        e.stopPropagation(); // Stop stuff happening
-        e.preventDefault(); // Totally stop stuff happening
-
-        uploadFile.sendFiles({
-            url     : '/upload',
-            files   : _files,
-            form    : this,
-            callback : function () {
-
-                console.log('callback');
-
-            }
-        });
-
-    }
+define([], function () {
 
     $(function () {
 
