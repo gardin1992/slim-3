@@ -9,19 +9,33 @@
     </head>
     <body>
 
+        <div class="jumbotron">
+            <div class="container">
+                <h1>Player</h1>
+                <div id="Player">
+                    <video>
+                    </video>
+                </div>
+            </div>
+        </div>
+
         <main class="container">
 
-            <div class="col-sm-8 col-sm-offset-2" style="height: 300px; overflow-y: auto;">
+
+
+            <div class="col-sm-8 col-sm-offset-2">
+                <div class="row">
+                    <div class="col-sm-8" style="height: 300px; overflow-y: auto;">
                 <h3>Lista de Arquivos</h3>
                 <ul id="listFiles">
                 </ul>
             </div>
             
-            <div class="col-sm-8 col-sm-offset-2">
+            <div class="col-sm-4">
 
                 <h3>Upload a file</h3>
 
-                <form id="formUpload" action="/upload" method="post" enctype="multipart/form-data">
+                <form id="formFiles" action="/upload" method="post" enctype="multipart/form-data">
                     
                     <div class="form-group">
                         <label>Select file to upload:</label>
@@ -37,6 +51,8 @@
 
                 </form>
 
+            </div>
+                </div>
             </div>
 
         </main>

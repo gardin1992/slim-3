@@ -18,8 +18,10 @@ class AbstractDao {
 	public function getById($id) {
 
 		$sql = "SELECT * FROM $this->_table WHERE id=:id";
-		$sth = $this->_db->query($slq);
+
+		$sth = $this->_db->prepare($sql);
 	    $sth->bindParam('id', $id);
+
 	    $sth->execute();
 
 	    return $sth->fetchObject();

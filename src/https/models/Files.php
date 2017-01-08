@@ -39,11 +39,16 @@ class Files {
 	public function getFile() {
 
 		if ( $this->getTmpName() != "none" ) {
+
+			/*
 			
 			$fp = fopen($this->getTmpName(), "rb");
 		    $file = fread($fp, $this->getSize());
 		    $file = addslashes($file);
 		    fclose($fp);
+		    */
+
+		    return file_get_contents($this->getTmpName());
 
 		}
 

@@ -10,7 +10,7 @@ class FilesDao  extends AbstractDao {
 
 		parent::__construct($db);
 		$this->_table = 'files';
-		$this->_fields = ['name', 'file'];
+		$this->_fields = ['name', 'file', 'type'];
 
 	}
 

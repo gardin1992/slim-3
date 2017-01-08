@@ -6,5 +6,10 @@ requirejs.config({
     }
 });
 
-// Chamando módulo principal para iniciar a aplicação
-requirejs(["main"]);
+$(function () {
+
+	// Chamando módulo principal para iniciar a aplicação
+	requirejs(["main"]);
+
+});
+
