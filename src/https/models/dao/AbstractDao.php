@@ -41,42 +41,49 @@ class AbstractDao {
 	public function save($values = [], $id = null) {
 
 		if (empty($id))
-			$this->insert($values);
+			return $this->insert($values);
 
 		else
-			$this->update($id, $values);
+			return $this->update($id, $values);
 
 	}
 
 	public function delete($id) {
 
-		$sql = "DELETE FROM $this->table WHERE id=:id";
+		$sql = "DELETE FROM $this->_table WHERE id=:id";
 
 		$sth = $this->_db->prepare($sql);
 		$sth->bindParam('id', $id);
 		$sth->execute();
 
-		return $sth->fetchAll();
+		return $id;
 
 	}
 
 	private function insert($values) {
 
-		$sql = "INSERT INTO $this->_table "
+		try {
+
+			$sql = "INSERT INTO $this->_table "
 			. "(" . implode(", ", $this->_fieldsToStr()) . ") VALUES "
 			. "(" . implode(", ", $this->_fieldsToStr(':') ) . ")";
 
-		$sth = $this->_db->prepare($sql);
+			$sth = $this->_db->prepare($sql);
 
-		for ($x = 0; $x < count($this->_fields); $x++) {
+			for ($x = 0; $x < count($this->_fields); $x++) {
 
-			$sth->bindParam($this->_fields[$x], $values[$this->_fields[$x]]);
+				$sth->bindParam($this->_fields[$x], $values[$this->_fields[$x]]);
 
+			}
+
+			$sth->execute();
+
+        	return $this->_db->lastInsertId();
+
+		} catch (Exception $x) {
+
+			echo json_encode($x);
 		}
-
-        $sth->execute();
-
-        return $this->_db->lastInsertId();
 
 	}
 

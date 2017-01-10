@@ -2,8 +2,6 @@
 
 namespace Src\Https\Models\Dao;
 
-use Src\Helpers\Singleton;
-
 class FilesDao  extends AbstractDao {
 
 	public function __construct($db) {

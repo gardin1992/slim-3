@@ -5,6 +5,18 @@ use Src\Helpers\UploadFile;
 use Src\Https\Models\Files;
 use Src\Https\Models\Dao\FilesDao;
 
+$app->options('/upload', function ($request, $response, $args) {
+    return $response;
+});
+
+$app->add(function ($req, $res, $next) {
+    $response = $next($req, $res);
+    return $response
+            ->withHeader('Access-Control-Allow-Origin', 'http://localhost:8080')
+            ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
+            ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+});
+
 // Routes
 // / - home
 $app->get('/', function ($request, $response, $args) {
@@ -13,118 +25,34 @@ $app->get('/', function ($request, $response, $args) {
 
 });
 
-// api
-
-$app->get('/api/files[/{id}]', function ($req, $res, $args) {
-
-    $dao = new FilesDao($this->db);
-
-    if (isset($args['id'])) {
-
-        $data = $dao->getById($args['id']);
-
-        $json = [
-            'success' => true,
-            'data' => [
-                'name' => $data->name,
-                'type' => $data->type,
-                'file' => base64_encode($data->file)
-            ]
-        ];
-
-        return $res->withJson($json);
-
-    } else {
-
-        $data = $dao->getAll();
-        $items = [];
-
-        for ($x = 0; $x <count($data); $x++) {
-
-            $item = $data[$x];
-            $item['file'] = base64_encode($item['file']);
-            array_push($items, $item);
-
-        }
-
-        $json = [
-            'success' => true,
-            'data' => $items
-        ];
-
-        return $res->withJson($json);
-
-    }
-
-    //echo '<video controls autoplay><source type="video/mp4" src="data:video/mp4;base64,' . $firstFile . '"></video>';
-    //echo '<img src="data:image/jpeg;base64,'. base64_encode( $file['file'] ).'"/>';
-
-    //var_dump($firstFile);
-    
-
-});
-
 // Crud Upload
-// /upload - index - get all
-$app->get('/upload', function ($req, $res) {
+$app->get('/upload[/{id}]', function ($req, $res, $args) {
 
-    $dao = new FilesDao($this->db);
-    $data = $dao->getAll();
+    $controller = \Src\Https\Controllers\UploadController::getInstance();
+    $controller->setDb($this->db);
 
-    return $res->withJson([
-		'success' => true,
-		'data' => $data
-	]);
-
-});
-
-// get by id
-$app->get('/upload/[{id}]', function ($req, $res, $args) {
-    
-    $dao = new FilesDao($this->db);
-    $data = $dao->getById($args['id']);
-
-    // $this->response
-    return $res->withJson([
-        'success' => true,
-        'data' => $data
-    ]);
+    return $res->withJson($controller->get($req, $res, $args));
 
 });
 
 // insert
 $app->post('/upload', function ($req, $res) {
 
-    $data = [];
+    $controller = \Src\Https\Controllers\UploadController::getInstance();
+    $controller->setDb($this->db);
+    $controller->post($req, $res);
 
-    if (!isset($_FILES['multiple']))
-        return $res->withJson([
-            'success' => false,
-            'err' => 'Nenhum arquivo enviado'
-        ]);
+});
 
-    $files = UploadFile::getFiles($_FILES['multiple']);
-    // /array_push($files, Helpers\UploadFile::getFiles($_FILES['simple']));
+$app->delete('/upload/[{id}]', function($req, $res, $args) {
 
-    $dao = new FilesDao($this->db);
-
-    foreach ($files as $key => $value) {
-
-        # code...
-        $props = [
-            'name' => $value->getName(),
-            'file' => $value->getFile(),
-            'type' => $value->getType(),
-        ];
-
-        $file = $dao->save($props);
-        array_push($data, $file);
-
-    }
+	$controller = \Src\Https\Controllers\UploadController::getInstance();
+    $controller->setDb($this->db);
+    $controller->delete($req, $res, $args);
 
     return $res->withJson([
-        'success' => true,
-        'data'    => $data
+    	'success' => true,
+    	'data' => 'Success. Delete id '. $args['id']
     ]);
 
 });

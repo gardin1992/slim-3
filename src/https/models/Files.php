@@ -12,21 +12,10 @@ class Files {
 
 	public function __construct($file) {
 
-		if (isset($file['name']) && isset($file['name'][0]) ) {
-
-			$this->_tmp_name = $file['tmp_name'][0];
-			$this->_size 	= $file['size'][0];
-			$this->_type 	= $file['type'][0];
-			$this->_name 	= $file['name'][0];
-
-		} else {
-
-			$this->_tmp_name = $file['tmp_name'];
-			$this->_size 	= $file['size'];
-			$this->_type 	= $file['type'];
-			$this->_name 	= $file['name'];
-
-		}
+		$this->_tmp_name = $file['tmp_name'];
+		$this->_size 	= $file['size'];
+		$this->_type 	= $file['type'];
+		$this->_name 	= $file['name'];
 
 	}
 
@@ -38,21 +27,15 @@ class Files {
 
 	public function getFile() {
 
-		if ( $this->getTmpName() != "none" ) {
-
-			/*
+		try {
 			
-			$fp = fopen($this->getTmpName(), "rb");
-		    $file = fread($fp, $this->getSize());
-		    $file = addslashes($file);
-		    fclose($fp);
-		    */
+			return file_get_contents($this->getTmpName());
 
-		    return file_get_contents($this->getTmpName());
+		} catch (Exception $e) {
+
+			die('Error GetFile');
 
 		}
-
-	  	return $file;
 
 	}
 

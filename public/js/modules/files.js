@@ -1,19 +1,32 @@
 define(function() {
 
+	var _url = '/upload';
+
 	return {
+
+		remove: function (id) {
+
+			$.ajax({
+				url: _url + '/' + id,
+				type: 'DELETE',
+				success: function (result, status, xhr) {},
+				error: function (xhr, status, error) {}
+			});
+
+		},
 
 		getAll: function (callback) {
 
 			$.ajax({
 
-				url: '/api/files',
+				url: _url,
 				type: 'GET',
 				success: function (result, status, xhr) {
 
+					console.log(result);
+
 					if (result.success)
 						callback(result.data);
-					else 
-						callback(result);
 				},
 				error: function (xhr, status, error) {
 
@@ -24,14 +37,13 @@ define(function() {
 
 			});
 
-
 		},
 
 		getById: function (id) {
 
 			$.ajax({
 
-				url: '/api/files/' + id,
+				url: _url + '/' + id,
 				type: 'GET',
 				success: function (result, status, xhr) {
 
