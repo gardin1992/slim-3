@@ -25,6 +25,18 @@ $app->get('/', function ($request, $response, $args) {
 
 });
 
+$app->get('/stream', function ($req, $res, $args) {
+
+    return $this->renderer->render($res, 'indexstream.phtml', $args);
+
+});
+
+$app->get('/file/stream', function ($req, $res, $args) {
+
+    \Src\Helpers\Stream::getVideo();
+
+});
+
 // Crud Upload
 $app->get('/upload[/{id}]', function ($req, $res, $args) {
 

@@ -1,5 +1,5 @@
-define(['index'], function (index) {
+define(['index', '../lib/ms-dash'], function (index, dash) {
 
-    index();
+    dash();
 
 });
