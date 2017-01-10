@@ -8,79 +8,46 @@
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        .container {
-            margin-top: 40px;
+        
+        body {
+          width: 990px;
+          margin: 0 auto;
         }
+
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="col-sm-4">
-            
-        <div class="row">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <h3>Upload a file</h3>
+<div class="content-form" id="formFiles">
+
+  <h3>Upload a file</h3>
                         
-                    <form id="formFiles" action="/upload" method="post" enctype="multipart/form-data">
+  <form action="/upload" method="post" enctype="multipart/form-data">
                             
-                        <div class="form-group">
-                            <label>Select files to multiple upload:</label>
-                            <input type="file" name="multiple[]" multiple>
-                        </div>
-
-                        <button type="submit">Upload</button>
-
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <h3>Lista de Arquivos</h3>
-                    <div id="listFiles"  class="list-group"></div>
-                </div>
-            </div>
-        </div>
-
+    <div class="form-group">
+      <label>Select files to multiple upload:</label>
+      <input type="file" name="multiple[]" multiple>
     </div>
-        
-    <div class="col-sm-8">
-        <h1>Simple MPEG-DASH Streaming player</h1>
-  <div id="grid">
-    <div id="col1">
-    <label>Enter .mpd file: 
-        <input type="text" id="filename" value="/uploads/mov_bbb.mp4" />
-      </label> <button id="load">Play</button><br />
-           
-      <!-- some areas to display info and content -->
-      <div id="mydiv">
-        <span id="myspan"><br />This demo requires Internet Explorer 11</span>
-      </div>
-      <div id="videoInfo"></div>
-      <div>&nbsp;</div>
-      <div id="curInfo"> 
-        <h3>Current values:</h3>
-        <ul>
-          <li>Index: <span id="curIndex"></span> of <span id="numIndexes"></span></li>
-          <li>Segment length: <span id="segLength"></span></li>
-          <li>Video time: <span id="curTime"></span></li>
-        </ul>
-      </div> 
-    </div>
-    <div id="col2">
-      <video id="myVideo" autoplay="autoplay" >No video available</video>
-            <div id="description">
-              This example uses HTML5 video, Media Source Extensions, and MPEG-DASH files.<br /> 
-              For more info see <a href="http://go.microsoft.com/fwlink/p/?LinkID=390962">Building a simple MPEG-DASH streaming player</a>. 
-            </div>
-    </div>
-  </div>
-    </div>
-                
+
+    <button type="submit">Upload</button>
+
+  </form>
+
+</div>
+
+<div class="content-list" id="listFiles">
+  
+  <h3>Lista de Arquivos</h3>
+  <div class="list-group"></div>
+
+</div>
+
+<div class="content-player" id="player">
+
+  <video>
+    <source src="">
+  </video>
+
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
